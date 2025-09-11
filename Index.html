@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pedido Yakimeshi</title>
+<style>
+  :root{
+    --accent:#e67e22;
+    --accent-dark:#d35400;
+    --accent-green:#27ae60;
+    --bg-card:#fff;
+    --shadow-card:0 6px 12px rgba(0,0,0,0.15);
+    --btn-hover:#d35400;
+    --bg-gradient1:linear-gradient(135deg,#ffecd2,#fcb69f);
+    --bg-gradient2:linear-gradient(135deg,#cfd9df,#e2ebf0);
+    --bg-gradient3:linear-gradient(135deg,#f6d365,#fda085);
+  }
+
+  body{font-family:"Segoe UI", Roboto, Arial, sans-serif;margin:0;background:#fff8f0;color:#222;}
+  header{background:linear-gradient(90deg,var(--accent),var(--accent-dark));color:#fff;padding:14px;text-align:center;font-weight:600;position:relative;}
+  header img{position:absolute;top:5px;left:10px;width:50px;height:50px;border-radius:8px;object-fit:cover;}
+  main{max-width:820px;margin:18px auto;padding:18px;}
+  .form-group{margin-bottom:12px;}
+  input[type="text"], select{width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid #ccc;font-size:16px;}
+  #productos{margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .producto{display:flex;flex-direction:column;align-items:center;padding:12px;border-radius:16px;box-shadow:var(--shadow-card);transition:transform 0.2s, box-shadow 0.2s;cursor:pointer;}
+  .producto:hover{transform:translateY(-4px);box-shadow:0 10px 20px rgba(0,0,0,0.25);}
+  .producto:nth-child(1){background:var(--bg-gradient1);}
+  .producto:nth-child(2){background:var(--bg-gradient2);}
+  .producto:nth-child(3){background:var(--bg-gradient3);}
+  .producto:nth-child(4){background:var(--bg-gradient1);}
+  .producto:nth-child(5){background:var(--bg-gradient2);}
+  .producto:nth-child(6){background:var(--bg-gradient3);}
+  .producto img{width:100%;height:140px;border-radius:12px;object-fit:cover;margin-bottom:8px;}
+  .nombre{font-weight:700;text-align:center;margin-bottom:4px;font-size:15px;color:#333;}
+  .precio{color:var(--accent-dark);font-weight:700;margin-bottom:8px;font-size:15px;}
+  .contador{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+  .contador button{width:36px;height:36px;border:none;border-radius:8px;background:var(--accent-green);color:#fff;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 3px 6px rgba(0,0,0,0.2);transition:background 0.2s, transform 0.1s;}
+  .contador button:hover{background:var(--btn-hover);}
+  .contador button:active{transform:scale(0.9);}
+  .contador span{min-width:26px;text-align:center;font-weight:700;font-size:16px;}
+  .btn-abrir{border:0;background:var(--accent-dark);color:#fff;border-radius:10px;padding:6px 12px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.2);transition:background 0.2s;}
+  .btn-abrir:hover{background:#b03e00;}
+  #total{text-align:center;margin-top:20px;font-size:20px;font-weight:800;color:var(--accent-dark);}
+  .boton{display:block;width:100%;padding:14px;border-radius:12px;border:0;background:var(--accent-green);color:#fff;font-size:18px;margin-top:16px;cursor:pointer;box-shadow:0 4px 8px rgba(0,0,0,0.2);transition:background 0.2s;}
+  .boton:hover{background:var(--btn-hover);}
+  .boton:active{transform:translateY(1px);}
+  #preview{background:#fff;padding:16px;border-radius:14px;margin-top:20px;box-shadow:0 6px 12px rgba(0,0,0,0.15);}
+  #preview h3{margin:0 0 8px 0;color:var(--accent-dark);}
+  pre{white-space:pre-wrap;margin:0;font-family:inherit;font-size:14px;color:#333;}
+  @media (max-width:640px){
+    #productos{grid-template-columns:repeat(2,1fr);gap:10px;}
+    .producto img{height:110px;}
+    .nombre{font-size:14px;}
+    .precio{font-size:14px;}
+    .contador span{font-size:14px;}
+  }
+  .modal{display:none;position:fixed;z-index:1000;padding-top:60px;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.7);}
+  .modal-contenido{background:#fff;margin:auto;padding:20px;border-radius:12px;width:80%;max-width:480px;text-align:center;position:relative;box-shadow:0 6px 14px rgba(0,0,0,0.25);}
+  .modal img{max-width:100%;border-radius:12px;margin-bottom:12px;}
+  .cerrar{position:absolute;top:10px;right:20px;font-size:28px;cursor:pointer;color:#333;}
+  .submenu{margin-top:15px;display:flex;flex-direction:column;gap:10px;}
+  .submenu-item{display:flex;align-items:center;justify-content:space-between;border:1px solid #ddd;border-radius:8px;padding:8px 10px;}
+  .submenu-item button{width:32px;height:32px;border:none;border-radius:6px;background:var(--accent-green);color:#fff;font-size:18px;font-weight:700;cursor:pointer;transition:background 0.2s;}
+  .submenu-item button:hover{background:var(--btn-hover);}
+  .submenu-item span{font-size:16px;font-weight:600;}
+</style>
+</head>
+<body>
+<header>
+  🧾 Pedido Yakimeshi
+  <img src="https://raw.githubusercontent.com/joetupapa1-cell/Menu/main/fondo%20japon.jpg" alt="Yakimeshi">
+</header>
+
+<main>
+  <div class="form-group">
+    <label>Nombre del cliente:
+      <input id="cliente" type="text" placeholder="Escribe tu nombre">
+    </label>
+  </div>
+
+  <div class="form-group">
+    <label>Dirección:
+      <input id="direccion" type="text" placeholder="Escribe tu dirección">
+    </label>
+  </div>
+
+  <div id="productos" aria-live="polite"></div>
+
+  <div id="total">Total: $0</div>
+
+  <div class="form-group">
+    <label>Forma de pago:
+      <select id="pago">
+        <option>Efectivo</option>
+        <option>Transferencia</option>
+      </select>
+    </label>
+  </div>
+
+  <div id="preview">
+    <h3>Vista previa del pedido</h3>
+    <pre id="previewContent"></pre>
+  </div>
+
+  <button id="whatsapp" class="boton">Enviar pedido</button>
+</main>
+
+<!-- Modal -->
+<div id="miModal" class="modal">
+  <div class="modal-contenido">
+    <span class="cerrar" onclick="cerrarModal()">&times;</span>
+    <img id="modalImg" src="" alt="Producto Grande">
+    <h3 id="modalNombre"></h3>
+    <div class="submenu" id="modalOpciones"></div>
+  </div>
+</div>
+
+<script>
+/* ====== WhatsApp: número y construcción segura ====== */
+const numeroLocal = "5530161290"; // solo dígitos del número local
+const numeroWhatsApp = "52" + numeroLocal.replace(/\D/g, ""); // México +52
+
+/* ====== Datos ====== */
+const productosData=[
+  {nombre:"Yakimeshi Verduras", precio:80, img:"https://raw.githubusercontent.com/joetupapa1-cell/Menu/main/yakimeshi%20verduras.jpg?raw=true"},
+  {nombre:"Yakimeshi Camarón", precio:95, img:"https://raw.githubusercontent.com/joetupapa1-cell/Menu/main/yakimeshi%20camaron.jpg?raw=true"},
+  {nombre:"Yakimeshi Pollo", precio:90, img:"https://raw.githubusercontent.com/joetupapa1-cell/Menu/main/yakimeshi%20pollo.jpg?raw=true"},
+  {nombre:"Yakimeshi Cerdo", precio:90, img:"https://raw.githubusercontent.com/joetupapa1-cell/Menu/main/yakimeshi%20cerdo.jpg?raw=true"},
+  {nombre:"Yakimeshi Mixto", precio:110, img:"https://raw.githubusercontent.com/joetupapa1-cell/Menu/main/yakimeshi%20mixto.jpg?raw=true"},
+  {nombre:"Refrescos", precio:20, img:"https://raw.githubusercontent.com/joetupapa1-cell/Menu/main/refresco.jpg?raw=true"}
+];
+const saboresRefresco=["Coca Cola","Pepsi","Fanta","Sprite"];
+
+/* ====== Elementos ====== */
+const productosContainer=document.getElementById("productos");
+const totalDiv=document.getElementById("total");
+const previewContent=document.getElementById("previewContent");
+const clienteEl=document.getElementById("cliente");
+const direccionEl=document.getElementById("direccion");
+const pagoEl=document.getElementById("pago");
+const btnWhats=document.getElementById("whatsapp");
+
+/* ====== Estado ====== */
+let cantidades={};
+let refrescosSeleccionados={};
+
+/* ====== Util ====== */
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+}
+
+/* ====== Render ====== */
+function renderProductos(){
+  let html="";
+  productosData.forEach((p,i)=>{
+    if(p.nombre==="Refrescos"){
+      html+=`
+        <div class="producto" data-index="${i}">
+          <img src="${p.img}" alt="${escapeHtml(p.nombre)}">
+          <div class="nombre">${escapeHtml(p.nombre)}</div>
+          <div class="precio">$${p.precio}</div>
+          <button class="btn-abrir" onclick="abrirModal(${i})">Seleccionar</button>
+        </div>
+      `;
+    } else {
+      cantidades[i] = cantidades[i] || 0;
+      html+=`
+        <div class="producto" data-index="${i}">
+          <img src="${p.img}" alt="${escapeHtml(p.nombre)}">
+          <div class="nombre">${escapeHtml(p.nombre)}</div>
+          <div class="precio">$${p.precio}</div>
+          <div class="contador">
+            <button onclick="cambiarCantidad(${i},-1)">-</button>
+            <span id="cant-${i}">${cantidades[i]}</span>
+            <button onclick="cambiarCantidad(${i},1)">+</button>
+          </div>
+          <button class="btn-abrir" onclick="abrirModal(${i})">Opciones</button>
+        </div>
+      `;
+    }
+  });
+  productosContainer.innerHTML=html;
+}
+
+/* ====== Cantidades / Totales ====== */
+function cambiarCantidad(index, delta){
+  cantidades[index]=(cantidades[index]||0)+delta;
+  if(cantidades[index]<0) cantidades[index]=0;
+  const lbl=document.getElementById(`cant-${index}`);
+  if(lbl) lbl.innerText=cantidades[index];
+  mostrarVistaPrevia();
+}
+
+function calcularTotal(){
+  let total=0;
+  for(let i in cantidades){
+    total+=productosData[i].precio*(cantidades[i]||0);
+  }
+  for(let sabor in refrescosSeleccionados){
+    total+=refrescosSeleccionados[sabor]*20;
+  }
+  return total;
+}
+
+/* ====== Mensaje / Vista previa ====== */
+function generarMensaje(){
+  const cliente=clienteEl.value.trim();
+  const direccion=direccionEl.value.trim();
+  const pago=pagoEl.value;
+  let mensaje=`*Pedido Yakimeshi*\n`;
+  mensaje+=`Cliente: ${cliente}\n`;
+  mensaje+=`Dirección: ${direccion}\n\n`;
+  mensaje+=`*Detalle del pedido:*\n`;
+  productosData.forEach((p,i)=>{
+    if(cantidades[i]>0){
+      mensaje+=`- ${p.nombre}: ${cantidades[i]} x $${p.precio}\n`;
+    }
+  });
+  if(Object.keys(refrescosSeleccionados).length>0){
+    mensaje+=`\nRefrescos:\n`;
+    for(let sabor in refrescosSeleccionados){
+      if(refrescosSeleccionados[sabor]>0){
+        mensaje+=`- ${sabor}: ${refrescosSeleccionados[sabor]} x $20\n`;
+      }
+    }
+  }
+  mensaje+=`\n*Total:* $${calcularTotal()}\n`;
+  mensaje+=`Forma de pago: ${pago}`;
+  return mensaje;
+}
+
+function mostrarVistaPrevia(){
+  let vista="";
+  productosData.forEach((p,i)=>{
+    if(cantidades[i]>0){
+      vista+=`${p.nombre}: ${cantidades[i]} x $${p.precio}\n`;
+    }
+  });
+  if(Object.keys(refrescosSeleccionados).length>0){
+    vista+=`\nRefrescos:\n`;
+    for(let sabor in refrescosSeleccionados){
+      if(refrescosSeleccionados[sabor]>0){
+        vista+=`${sabor}: ${refrescosSeleccionados[sabor]} x $20\n`;
+      }
+    }
+  }
+  vista+=`\nTotal: $${calcularTotal()}`;
+  previewContent.textContent=vista;
+  totalDiv.textContent=`Total: $${calcularTotal()}`;
+}
+
+/* ====== Modal ====== */
+function abrirModal(index){
+  const modal=document.getElementById("miModal");
+  const modalImg=document.getElementById("modalImg");
+  const modalNombre=document.getElementById("modalNombre");
+  const modalOpciones=document.getElementById("modalOpciones");
+
+  modalImg.src=productosData[index].img;
+  modalNombre.textContent=productosData[index].nombre;
+  modalOpciones.innerHTML="";
+
+  if(productosData[index].nombre==="Refrescos"){
+    saboresRefresco.forEach(sabor=>{
+      if(refrescosSeleccionados[sabor]===undefined){refrescosSeleccionados[sabor]=0;}
+      const item=document.createElement("div");
+      item.className="submenu-item";
+      item.innerHTML=`
+        <span>${sabor}</span>
+        <div>
+          <button onclick="cambiarRefresco('${sabor}',-1)">-</button>
+          <span id="ref-${sabor}">${refrescosSeleccionados[sabor]}</span>
+          <button onclick="cambiarRefresco('${sabor}',1)">+</button>
+        </div>
+      `;
+      modalOpciones.appendChild(item);
+    });
+  } else {
+    modalOpciones.textContent="Sin opciones adicionales.";
+  }
+
+  modal.style.display="block";
+}
+
+function cambiarRefresco(sabor,delta){
+  refrescosSeleccionados[sabor]=(refrescosSeleccionados[sabor]||0)+delta;
+  if(refrescosSeleccionados[sabor]<0) refrescosSeleccionados[sabor]=0;
+  const lbl=document.getElementById(`ref-${sabor}`);
+  if(lbl) lbl.innerText=refrescosSeleccionados[sabor];
+  mostrarVistaPrevia();
+}
+
+function cerrarModal(){
+  document.getElementById("miModal").style.display="none";
+}
+
+window.onclick=function(e){
+  const modal=document.getElementById("miModal");
+  if(e.target===modal){
+    cerrarModal();
+  }
+};
+
+/* ====== Envío WhatsApp con fallback anti pop-up ====== */
+btnWhats.addEventListener('click',ev=>{
+  ev.preventDefault();
+
+  const cliente=clienteEl.value.trim();
+  const direccion=direccionEl.value.trim();
+  if(!cliente||!direccion){
+    alert("Por favor, ingresa tu nombre y dirección antes de enviar el pedido.");
+    return;
+  }
+
+  const total=calcularTotal();
+  if(total<=0){
+    if(!confirm("El total es $0. ¿Deseas enviar el pedido igual?")) return;
+  }
+
+  const mensaje=generarMensaje();
+
+  // URL universal (funciona móvil y escritorio con redirección a WhatsApp Web)
+  const url=`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+
+  // Intento abrir en nueva pestaña; si el navegador lo bloquea, redirijo en la misma
+  const w = window.open(url, "_blank");
+  if(!w || w.closed || typeof w.closed === "undefined"){
+    window.location.href = url;
+  }
+});
+
+/* ====== Inicio ====== */
+renderProductos();
+mostrarVistaPrevia();
+</script>
+</body>
+</html>
